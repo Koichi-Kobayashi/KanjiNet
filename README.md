@@ -3,7 +3,7 @@
 ## Kanji（以下オリジナルを引用しています。）  
 [![Go Reference](https://pkg.go.dev/badge/github.com/ikawaha/kanji.svg)](https://pkg.go.dev/github.com/ikawaha/kanji)
 
-===
+---
 This package is a library for the Japanese kanji, including the regular-use kanji characters (常用漢字表), etc.
 
 日本語漢字に関するパッケージです。
@@ -24,6 +24,9 @@ This package is a library for the Japanese kanji, including the regular-use kanj
 
 ---
 MIT
+
+---
+
 
 ## ShiftJISNormalizer（異体/旧字の常用正規化）
 
@@ -86,3 +89,63 @@ dotnet add package Kanji.Net --version 1.0.0-preview.1
 ```
 
 インストール後は README の使用例に従って `ShiftJISNormalizer` や `Kanji` API をご利用ください。
+
+## ファイルとSQL Server上の異体字を照合する実装例
+
+### 前提
+- `ShiftJISNormalizer` を使い、異体/旧字/互換漢字を常用に正規化します。
+  - ホットセット（人名頻出）+ メインCSVを指定すると網羅性が上がります。
+  - ファイル解決は「指定パス → 出力直下 → 出力/kanjidata → 埋め込みリソース」の順で自動解決されます。
+
+```csharp
+var mainCsv = "normalization_map_namefirst_491.csv";
+var hotCsv  = "normalization_map_hotset_names.csv";
+var normalizer = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv);
+```
+
+### 1) その場照合（アプリ側で等価判定）
+- ファイルに「高橋」とあっても、DB側が「髙橋」でも一致させたい場合:
+
+```csharp
+// ファイル側の値
+string text = "高橋";
+
+// DBから取得した候補行に対して正規化等価判定
+foreach (var row in rowsFromDb)
+{
+    if (normalizer.Equivalent(row.Name, text))
+    {
+        // 「髙橋」「﨑」「𠮷」など異体字でも一致
+        // ヒット処理...
+    }
+}
+
+// 確認例
+bool same = normalizer.Equivalent("髙橋", "高橋"); // true
+```
+
+### 2) 正規化列を持って索引検索（推奨）
+- 事前に正規化済み列を用意し、= 検索で高速一致させます。
+
+```sql
+-- 例: 正規化列とインデックスを追加
+ALTER TABLE dbo.People ADD Name_TextNorm NVARCHAR(200) NULL;
+CREATE INDEX IX_People_Name_TextNorm ON dbo.People(Name_TextNorm);
+```
+
+```csharp
+// 初期移行（全行）
+foreach (var row in rowsFromDb)
+{
+    row.Name_TextNorm = normalizer.Normalize(row.Name);
+    // UPDATE dbo.People SET Name_TextNorm = @row.Name_TextNorm WHERE Id = @row.Id;
+}
+
+// 照合時
+string key = normalizer.Normalize("高橋");
+// SELECT * FROM dbo.People WHERE Name_TextNorm = @key;
+```
+
+ポイント:
+- `Normalize` は文字列を常用に寄せ、`Equivalent(a,b)` は「正規化後に等しいか」を判定します。
+- CSVを用意できない場合の簡易用途は `ShiftJISNormalizer.CreateBuiltinHotsetMinimal()` でも検証可能です。
