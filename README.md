@@ -1,6 +1,8 @@
 [Kanji](https://github.com/ikawaha/kanji) のC＃版です。
 
 Kanji（以下オリジナルを引用しています。）
+[![Go Reference](https://pkg.go.dev/badge/github.com/ikawaha/kanji.svg)](https://pkg.go.dev/github.com/ikawaha/kanji)
+
 ===
 This package is a library for the Japanese kanji, including the regular-use kanji characters (常用漢字表), etc.
 
