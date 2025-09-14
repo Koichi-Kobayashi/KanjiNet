@@ -24,3 +24,43 @@ This package is a library for the Japanese kanji, including the regular-use kanj
 
 ---
 MIT
+
+## ShiftJISNormalizer（異体/旧字の常用正規化）
+
+人名で頻出する異体字・旧字体・互換漢字などを、常用に正規化するユーティリティです。
+
+### 使用例
+
+```csharp
+using System;
+using System.Text;
+
+class Program
+{
+    static void Main()
+    {
+        // 例: 実ファイル名は適宜変更してください（埋め込み/出力/kanjidata/ から自動解決）
+        var mainCsv = "normalization_map_namefirst_491.csv";
+        var hotCsv  = "normalization_map_hotset_names.csv";
+
+        var normalizer = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv);
+
+        var input = "髙橋﨑太郎と𠮷田さん（濵田）";
+        var normalized = normalizer.Normalize(input);
+
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.WriteLine(input);       // 元の文字列
+        Console.WriteLine(normalized);  // 正規化後の文字列
+        Console.WriteLine("Same after normalize? " + normalizer.Equivalent("髙橋", "高橋"));
+        Console.WriteLine($"Counts: {normalizer.Count.hotCount} hot, {normalizer.Count.mainCount} main");
+    }
+}
+```
+
+### ローディングの解決順
+- 指定パスがそのまま存在するファイル
+- 出力ディレクトリ直下のファイル
+- 出力ディレクトリ配下 `kanjidata/` のファイル
+- アセンブリ埋め込みリソース `kanjidata.{ファイル名}`
+
+`normalization_map_hotset_names.csv` は埋め込みリソースとして同梱されます。

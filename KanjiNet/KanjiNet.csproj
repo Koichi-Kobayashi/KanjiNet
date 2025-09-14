@@ -7,9 +7,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\testdata\golden_old-new.txt" Pack="true" CopyToOutputDirectory="Always" Link="testdata/golden_old-new.txt" />
-    <None Include="..\..\testdata\golden_jyouyou_H22-11-30.csv" Pack="true" CopyToOutputDirectory="Always" Link="testdata/golden_jyouyou_H22-11-30.csv" />
-    <None Include="..\..\testdata\golden_jinmei.txt" Pack="true" CopyToOutputDirectory="Always" Link="testdata/golden_jinmei.txt" />
+    <None Remove="kanjidata\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="kanjidata\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

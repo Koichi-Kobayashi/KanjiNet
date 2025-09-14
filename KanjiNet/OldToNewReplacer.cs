@@ -35,19 +35,113 @@ public static class OldToNewReplacer
     private static Dictionary<int, string> BuildMap()
     {
         var dict = new Dictionary<int, string>();
-        var path = Path.Combine(AppContext.BaseDirectory, "testdata", "golden_old-new.txt");
-        if (!File.Exists(path)) return dict;
-        foreach (var line in File.ReadLines(path))
+
+        // 1) 最低限のマッピングは組み込みリソースの hotset CSV を読み込む
+        LoadHotsetFromEmbedded(dict);
+
+        // 2) より包括的な golden_old-new.txt が存在すれば、その定義で上書き
+        var path = Path.Combine(AppContext.BaseDirectory, "kanjidata", "golden_old-new.txt");
+        if (File.Exists(path))
         {
-            if (line.Length == 0 || line[0] == '!') continue;
-            var cols = line.Split(' ');
-            if (cols.Length != 4) continue;
-            if (int.TryParse(cols[0], System.Globalization.NumberStyles.HexNumber, null, out var code))
+            foreach (var line in File.ReadLines(path))
             {
-                dict[code] = cols[3];
+                if (line.Length == 0 || line[0] == '!') continue;
+                var cols = line.Split(' ');
+                if (cols.Length != 4) continue;
+                if (int.TryParse(cols[0], System.Globalization.NumberStyles.HexNumber, null, out var code))
+                {
+                    dict[code] = cols[3];
+                }
             }
         }
         return dict;
+    }
+
+    private static void LoadHotsetFromEmbedded(Dictionary<int, string> dict)
+    {
+        var asm = typeof(OldToNewReplacer).Assembly;
+        string? resourceName = null;
+        foreach (var name in asm.GetManifestResourceNames())
+        {
+            if (name.EndsWith("kanjidata.normalization_map_hotset_names.csv", StringComparison.OrdinalIgnoreCase))
+            {
+                resourceName = name;
+                break;
+            }
+        }
+        if (resourceName is null) return;
+
+        using var stream = asm.GetManifestResourceStream(resourceName);
+        if (stream is null) return;
+        using var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
+
+        string? line;
+        bool isFirst = true;
+        while ((line = reader.ReadLine()) is not null)
+        {
+            if (isFirst)
+            {
+                isFirst = false;
+                // ヘッダ行をスキップ
+                if (line.StartsWith("target_char")) continue;
+            }
+            if (line.Length == 0) continue;
+            var fields = ParseCsvLine(line);
+            if (fields.Length < 3) continue;
+            var target = fields[0];
+            var variant = fields[2];
+            if (string.IsNullOrEmpty(target) || string.IsNullOrEmpty(variant)) continue;
+            int code = char.ConvertToUtf32(variant, 0);
+            dict[code] = target;
+        }
+    }
+
+    private static string[] ParseCsvLine(string line)
+    {
+        var list = new System.Collections.Generic.List<string>(8);
+        var sb = new System.Text.StringBuilder(line.Length);
+        bool inQuotes = false;
+        for (int i = 0; i < line.Length; i++)
+        {
+            char c = line[i];
+            if (inQuotes)
+            {
+                if (c == '"')
+                {
+                    if (i + 1 < line.Length && line[i + 1] == '"')
+                    {
+                        sb.Append('"');
+                        i++;
+                    }
+                    else
+                    {
+                        inQuotes = false;
+                    }
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            else
+            {
+                if (c == ',')
+                {
+                    list.Add(sb.ToString());
+                    sb.Clear();
+                }
+                else if (c == '"')
+                {
+                    inQuotes = true;
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+        }
+        list.Add(sb.ToString());
+        return list.ToArray();
     }
 }
 

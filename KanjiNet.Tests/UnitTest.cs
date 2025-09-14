@@ -31,7 +31,7 @@ public class PublicApiTests
     [Fact]
     public void ReplaceOldToNew_UsesMappingWhenAvailable()
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "testdata", "golden_old-new.txt");
+        var path = Path.Combine(AppContext.BaseDirectory, "kanjidata", "golden_old-new.txt");
         if (File.Exists(path))
         {
             Assert.Equal("国体", Kanji.ReplaceOldToNew("國體"));
@@ -41,5 +41,12 @@ public class PublicApiTests
         {
             Assert.Equal("abc", Kanji.ReplaceOldToNew("abc"));
         }
+    }
+
+    [Fact]
+    public void Isタカハシ()
+    {
+        Assert.Equal("高", Kanji.ReplaceOldToNew("髙"));
+        Assert.Equal("橋", Kanji.ReplaceOldToNew("橋"));
     }
 }
