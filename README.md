@@ -64,3 +64,25 @@ class Program
 - アセンブリ埋め込みリソース `kanjidata.{ファイル名}`
 
 `normalization_map_hotset_names.csv` は埋め込みリソースとして同梱されます。
+
+## NuGet からの導入
+
+[![NuGet](https://img.shields.io/nuget/vpre/Kanji.Net.svg)](https://www.nuget.org/packages/Kanji.Net)
+
+### インストール（.NET CLI）
+
+```bash
+dotnet add package Kanji.Net --version 1.0.0-preview.1
+```
+
+### インストール（PackageReference）
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Kanji.Net" Version="1.0.0-preview.1" />
+  <!-- 例: Release 版に移行する際は 1.0.0 などに変更してください -->
+  
+</ItemGroup>
+```
+
+インストール後は README の使用例に従って `ShiftJISNormalizer` や `Kanji` API をご利用ください。
