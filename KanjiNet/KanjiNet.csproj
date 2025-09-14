@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\testdata\golden_old-new.txt" Pack="true" CopyToOutputDirectory="Always" Link="testdata/golden_old-new.txt" />
+    <None Include="..\..\testdata\golden_jyouyou_H22-11-30.csv" Pack="true" CopyToOutputDirectory="Always" Link="testdata/golden_jyouyou_H22-11-30.csv" />
+    <None Include="..\..\testdata\golden_jinmei.txt" Pack="true" CopyToOutputDirectory="Always" Link="testdata/golden_jinmei.txt" />
+  </ItemGroup>
+
+</Project>
