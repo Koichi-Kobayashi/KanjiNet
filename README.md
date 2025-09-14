@@ -1,6 +1,6 @@
 [Kanji](https://github.com/ikawaha/kanji) のC＃版です。
 
-Kanji（以下オリジナルを引用しています。）
+Kanji（以下オリジナルを引用しています。）  
 [![Go Reference](https://pkg.go.dev/badge/github.com/ikawaha/kanji.svg)](https://pkg.go.dev/github.com/ikawaha/kanji)
 
 ===
