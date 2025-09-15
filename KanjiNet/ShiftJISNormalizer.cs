@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using KanjiNet;
 
 #nullable enable
 
@@ -216,28 +217,14 @@ public sealed class ShiftJISNormalizer
 
     private static Dictionary<Rune, Rune> LoadVariantToTargetMapFlexible(string pathOrName, bool skipHeader)
     {
-        // 1) 引数そのまま
-        if (File.Exists(pathOrName))
+        // 1) パス解決ヘルパーで探索
+        var resolved = DataPathResolver.TryResolvePath(pathOrName);
+        if (resolved is not null)
         {
-            return LoadVariantToTargetMap(pathOrName, skipHeader);
+            return LoadVariantToTargetMap(resolved, skipHeader);
         }
 
-        // 2) 出力ディレクトリ直下
-        var baseDir = AppContext.BaseDirectory;
-        var candidate = Path.Combine(baseDir, pathOrName);
-        if (File.Exists(candidate))
-        {
-            return LoadVariantToTargetMap(candidate, skipHeader);
-        }
-
-        // 3) 出力ディレクトリの kanjidata 下
-        candidate = Path.Combine(baseDir, "kanjidata", pathOrName);
-        if (File.Exists(candidate))
-        {
-            return LoadVariantToTargetMap(candidate, skipHeader);
-        }
-
-        // 4) 埋め込みリソースからベース名一致で検索
+        // 2) 埋め込みリソースからベース名一致で検索
         var fileName = Path.GetFileName(pathOrName);
         var asm = typeof(ShiftJISNormalizer).Assembly;
         string? resourceName = null;
@@ -259,7 +246,7 @@ public sealed class ShiftJISNormalizer
             }
         }
 
-        throw new FileNotFoundException($"CSV not found (tried path and embedded): {pathOrName}");
+        throw new FileNotFoundException($"CSV not found (path or embedded): {pathOrName}");
     }
 
     private static bool TryGetSingleRune(string s, out Rune rune)

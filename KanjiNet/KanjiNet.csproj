@@ -37,7 +37,30 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Remove="kanjidata\golden_jinmei.txt" />
+	  <EmbeddedResource Remove="kanjidata\golden_jyouyou_H22-11-30.csv" />
+	  <EmbeddedResource Remove="kanjidata\golden_old-new.txt" />
+	  <EmbeddedResource Remove="kanjidata\normalization_map_hotset_names.csv" />
+	  <EmbeddedResource Remove="kanjidata\normalization_map_namefirst_491.csv" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="/" Link="README.md" />
+		<None Include="kanjidata\golden_jinmei.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="kanjidata\golden_jyouyou_H22-11-30.csv">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="kanjidata\golden_old-new.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="kanjidata\normalization_map_hotset_names.csv">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="kanjidata\normalization_map_namefirst_491.csv">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>

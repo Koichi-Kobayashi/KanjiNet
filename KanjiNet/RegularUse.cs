@@ -119,8 +119,8 @@ public static class RegularUse
 
     private static IEnumerable<int> LoadOldFormScalars()
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "kanjidata", "golden_old-new.txt");
-        if (!File.Exists(path)) return Array.Empty<int>();
+        var path = DataPathResolver.TryResolvePath("golden_old-new.txt");
+        if (path is null) return Array.Empty<int>();
         var set = new HashSet<int>();
         foreach (var line in File.ReadLines(path))
         {

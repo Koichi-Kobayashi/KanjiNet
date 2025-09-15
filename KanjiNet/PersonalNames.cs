@@ -18,8 +18,8 @@ public static class PersonalNames
 	private static UnicodeHelpers.RangeTable BuildJinmei()
 	{
 		// golden_jinmei.txt のセクション1（!!!で囲まれたブロック）にすべての対象文字が並ぶ
-		var path = Path.Combine(AppContext.BaseDirectory, "kanjidata", "golden_jinmei.txt");
-		if (!File.Exists(path)) return new UnicodeHelpers.RangeTable();
+		var path = DataPathResolver.TryResolvePath("golden_jinmei.txt");
+		if (path is null) return new UnicodeHelpers.RangeTable();
 		var scalars = new HashSet<int>();
 		using var sr = new StreamReader(path);
 		string? line = sr.ReadLine();

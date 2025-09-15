@@ -40,8 +40,8 @@ public static class OldToNewReplacer
         LoadHotsetFromEmbedded(dict);
 
         // 2) より包括的な golden_old-new.txt が存在すれば、その定義で上書き
-        var path = Path.Combine(AppContext.BaseDirectory, "kanjidata", "golden_old-new.txt");
-        if (File.Exists(path))
+        var path = DataPathResolver.TryResolvePath("golden_old-new.txt");
+        if (path is not null)
         {
             foreach (var line in File.ReadLines(path))
             {
@@ -69,20 +69,30 @@ public static class OldToNewReplacer
                 break;
             }
         }
-        if (resourceName is null) return;
+        if (resourceName is null)
+        {
+            var filePath = DataPathResolver.TryResolvePath("normalization_map_hotset_names.csv");
+            if (filePath is null) return;
+            using var fileReader = new StreamReader(filePath, detectEncodingFromByteOrderMarks: true);
+            LoadHotsetFromCsvReader(dict, fileReader, hasHeader: true);
+            return;
+        }
 
         using var stream = asm.GetManifestResourceStream(resourceName);
         if (stream is null) return;
         using var reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
+        LoadHotsetFromCsvReader(dict, reader, hasHeader: true);
+    }
 
+    private static void LoadHotsetFromCsvReader(Dictionary<int, string> dict, TextReader reader, bool hasHeader)
+    {
         string? line;
         bool isFirst = true;
         while ((line = reader.ReadLine()) is not null)
         {
-            if (isFirst)
+            if (isFirst && hasHeader)
             {
                 isFirst = false;
-                // ヘッダ行をスキップ
                 if (line.StartsWith("target_char")) continue;
             }
             if (line.Length == 0) continue;

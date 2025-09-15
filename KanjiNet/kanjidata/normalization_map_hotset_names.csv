@@ -17,3 +17,4 @@ target_char,target_codepoint,variant_char,variant_codepoint,category,notes
 桜,U+685C,櫻,U+6AFB,kyuji->shinjitai,旧字→新字体
 沢,U+6CA2,澤,U+6FA4,kyuji->shinjitai,旧字→新字体
 関,U+95A2,關,U+95DC,kyuji->shinjitai,旧字→新字体
+柳,U+67F3,栁,U+6801,itaiji,異体→柳
