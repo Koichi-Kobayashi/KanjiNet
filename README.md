@@ -42,7 +42,7 @@ class Program
 {
     static void Main()
     {
-        // 例: 実ファイル名は適宜変更してください（埋め込み/出力/kanjidata/ から自動解決）
+        // 例: 実ファイル名は適宜変更してください（出力/kanjidata/ などから自動解決）
         var mainCsv = "normalization_map_namefirst_491.csv";
         var hotCsv  = "normalization_map_hotset_names.csv";
 
@@ -60,13 +60,25 @@ class Program
 }
 ```
 
+### ホットセット優先/メイン優先の切替
+
+```csharp
+var mainCsv = "normalization_map_namefirst_491.csv";
+var hotCsv  = "normalization_map_hotset_names.csv";
+
+// デフォルト（ホットセット優先）
+var normalizerHotFirst = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv, preferHotset: true);
+
+// メイン優先にしたい場合
+var normalizerMainFirst = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv, preferHotset: false);
+```
+
 ### ローディングの解決順
 - 指定パスがそのまま存在するファイル
 - 出力ディレクトリ直下のファイル
 - 出力ディレクトリ配下 `kanjidata/` のファイル
-- アセンブリ埋め込みリソース `kanjidata.{ファイル名}`
+- リポジトリの `KanjiNet/kanjidata/` のファイル（開発時）
 
-`normalization_map_hotset_names.csv` は埋め込みリソースとして同梱されます。
 
 ## NuGet からの導入
 
@@ -101,6 +113,7 @@ dotnet add package Kanji.Net --version 1.0.0-preview.1
 var mainCsv = "normalization_map_namefirst_491.csv";
 var hotCsv  = "normalization_map_hotset_names.csv";
 var normalizer = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv);
+// メイン優先にしたい場合: ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv, preferHotset: false);
 ```
 
 ### 1) その場照合（アプリ側で等価判定）
