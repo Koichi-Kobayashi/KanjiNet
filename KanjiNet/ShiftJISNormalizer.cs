@@ -7,7 +7,7 @@ using KanjiNet;
 #nullable enable
 
 /// <summary>
-/// CYO向け 異体/旧字/互換漢字 → 常用(JIS X 0208) 正規化ユーティリティ（Hotset対応）
+/// 異体/旧字/互換漢字 → 常用(JIS X 0208) 正規化ユーティリティ（Hotset対応）
 /// - Unicodeの1文字（Rune）単位で置換（𠮷などのサロゲートも安全）
 /// - 二段構え: まず Hotset(人名など頻出) → 次に Main(全体表) の順に検索
 /// - CSV形式: target_char,target_codepoint,variant_char,variant_codepoint,category,notes
@@ -17,11 +17,13 @@ public sealed class ShiftJISNormalizer
 {
     private readonly Dictionary<Rune, Rune> _hotMap;   // variant -> target
     private readonly Dictionary<Rune, Rune> _mainMap;  // variant -> target
+    private readonly bool _preferHotset;
 
-    private ShiftJISNormalizer(Dictionary<Rune, Rune> hot, Dictionary<Rune, Rune> main)
+    private ShiftJISNormalizer(Dictionary<Rune, Rune> hot, Dictionary<Rune, Rune> main, bool preferHotset)
     {
         _hotMap  = hot;
         _mainMap = main;
+        _preferHotset = preferHotset;
     }
 
     /// <summary>
@@ -35,13 +37,14 @@ public sealed class ShiftJISNormalizer
         string mainCsvPath,
         string hotCsvPath,
         bool skipHeaderMain = true,
-        bool skipHeaderHot  = true)
+        bool skipHeaderHot  = true,
+        bool preferHotset   = true)
     {
         var hot  = LoadVariantToTargetMapFlexible(hotCsvPath,  skipHeaderHot);
         var main = LoadVariantToTargetMapFlexible(mainCsvPath, skipHeaderMain);
 
         // Hotsetのエントリはmainと重複していてもOK（Hotset優先で参照される）
-        return new ShiftJISNormalizer(hot, main);
+        return new ShiftJISNormalizer(hot, main, preferHotset);
     }
 
     /// <summary>
@@ -50,7 +53,7 @@ public sealed class ShiftJISNormalizer
     public static ShiftJISNormalizer FromCsv(string mainCsvPath, bool skipHeader = true)
     {
         var main = LoadVariantToTargetMapFlexible(mainCsvPath, skipHeader);
-        return new ShiftJISNormalizer(new Dictionary<Rune, Rune>(0), main);
+        return new ShiftJISNormalizer(new Dictionary<Rune, Rune>(0), main, true);
     }
 
     /// <summary>
@@ -80,11 +83,11 @@ public sealed class ShiftJISNormalizer
             [new Rune('冨')] = new Rune('富'),
             [new Rune('峯')] = new Rune('峰'),
         };
-        return new ShiftJISNormalizer(hot, new Dictionary<Rune, Rune>(0));
+        return new ShiftJISNormalizer(hot, new Dictionary<Rune, Rune>(0), true);
     }
 
     /// <summary>
-    /// 入力文字列を CYO検索用に正規化します（異体/旧字/互換→常用）。
+    /// 入力文字列を 異体/旧字/互換検索用に正規化します（異体/旧字/互換→常用）。
     /// </summary>
     public string Normalize(string? input)
     {
@@ -98,17 +101,35 @@ public sealed class ShiftJISNormalizer
         {
             if (Rune.TryGetRuneAt(input, i, out var r))
             {
-                if (_hotMap.TryGetValue(r, out var mappedHot))
+                if (_preferHotset)
                 {
-                    sb.Append(mappedHot);
-                }
-                else if (_mainMap.TryGetValue(r, out var mapped))
-                {
-                    sb.Append(mapped);
+                    if (_hotMap.TryGetValue(r, out var mappedHot))
+                    {
+                        sb.Append(mappedHot);
+                    }
+                    else if (_mainMap.TryGetValue(r, out var mapped))
+                    {
+                        sb.Append(mapped);
+                    }
+                    else
+                    {
+                        sb.Append(r);
+                    }
                 }
                 else
                 {
-                    sb.Append(r);
+                    if (_mainMap.TryGetValue(r, out var mapped))
+                    {
+                        sb.Append(mapped);
+                    }
+                    else if (_hotMap.TryGetValue(r, out var mappedHot))
+                    {
+                        sb.Append(mappedHot);
+                    }
+                    else
+                    {
+                        sb.Append(r);
+                    }
                 }
                 i += r.Utf16SequenceLength;
             }
@@ -123,7 +144,7 @@ public sealed class ShiftJISNormalizer
     }
 
     /// <summary>
-    /// 2つの文字列が「CYO正規化後に等しいか」を判定します（大小文字などは区別）。
+    /// 2つの文字列が「正規化後に等しいか」を判定します（大小文字などは区別）。
     /// </summary>
     public bool Equivalent(string? a, string? b)
         => string.Equals(Normalize(a), Normalize(b), StringComparison.Ordinal);
@@ -135,7 +156,7 @@ public sealed class ShiftJISNormalizer
     {
         var hot = new Dictionary<Rune, Rune>(_hotMap);
         hot[variant] = target;
-        return new ShiftJISNormalizer(hot, _mainMap);
+        return new ShiftJISNormalizer(hot, _mainMap, _preferHotset);
     }
 
     /// <summary>
@@ -145,7 +166,7 @@ public sealed class ShiftJISNormalizer
     {
         var main = new Dictionary<Rune, Rune>(_mainMap);
         main[variant] = target;
-        return new ShiftJISNormalizer(_hotMap, main);
+        return new ShiftJISNormalizer(_hotMap, main, _preferHotset);
     }
 
     /// <summary>
@@ -319,10 +340,10 @@ class Program
     static void Main()
     {
         // 例: 実ファイル名は適宜変更してください
-        var mainCsv = "cyo_normalization_map_namefirst_491.csv";
-        var hotCsv  = "cyo_normalization_map_hotset_names.csv";
+        var mainCsv = "normalization_map_namefirst_491.csv";
+        var hotCsv  = "normalization_map_hotset_names.csv";
 
-        var normalizer = CyoNormalizer.FromCsvWithHotset(mainCsv, hotCsv);
+        var normalizer = Normalizer.FromCsvWithHotset(mainCsv, hotCsv);
 
         var input = "髙橋﨑太郎と𠮷田さん（濵田）";
         var normalized = normalizer.Normalize(input);
