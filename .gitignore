@@ -1,3 +1,11 @@
+# Build artifacts
+**/bin/
+**/obj/
+
+# NuGet packages (local output)
+nupkg/
+*.nupkg
+
 # These are some examples of commonly ignored file patterns.
 # You should customize this list as applicable to your project.
 # Learn more about .gitignore:
