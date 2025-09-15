@@ -39,6 +39,9 @@ public static class Kanji
     // 旧→新置換
     public static string ReplaceOldToNew(string s) => OldToNewReplacer.Replace(s);
 
+    // 人名向け 異体字展開（例: 柳→栁 など）
+    public static string ReplaceToNameVariant(string s) => NameVariantExpander.ReplaceToNameVariant(s);
+
     // Discriminator（Allow/Disallow）
     public sealed class RegularUseDiscriminator
     {

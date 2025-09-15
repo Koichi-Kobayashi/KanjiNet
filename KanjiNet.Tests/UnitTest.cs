@@ -65,4 +65,11 @@ public class PublicApiTests
         Assert.Equal("高橋", Kanji.ReplaceOldToNew("髙橋"));
         Assert.Equal("柳", Kanji.ReplaceOldToNew("栁"));
     }
+
+    [Fact]
+    public void 名前用異体字_柳から栁へ()
+    {
+        Assert.Equal("二本栁", Kanji.ReplaceToNameVariant("二本柳"));
+        Assert.Equal("栁", Kanji.ReplaceToNameVariant("柳"));
+    }
 }

@@ -82,6 +82,27 @@ var normalizerMainFirst = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv, 
 注: NuGet から導入した場合は、パッケージに含まれる `kanjidata/` がビルド時に出力フォルダ直下へ自動展開されます（contentFiles）。そのため使用例ではファイル名だけで解決できます。
 
 
+## 人名向け 異体字展開（常用→異体）
+
+人名で好まれる異体字に変換するAPIを提供します。例: 「柳」→「栁」。
+
+### 使用例
+
+```csharp
+// 常用→人名向け異体に置換（Hotset優先、CSVから自動解決）
+var s1 = Kanji.ReplaceToNameVariant("二本柳"); // => "二本栁"
+var s2 = Kanji.ReplaceToNameVariant("柳");     // => "栁"
+```
+
+- 対象はCSVのカテゴリーが「itaiji」の行です。
+  - ホットセット: `normalization_map_hotset_names.csv`
+  - メイン表: `normalization_map_namefirst_491.csv`
+  - 解決順は `DataPathResolver` に従います（出力直下 → 出力/kanjidata → リポジトリの `KanjiNet/kanjidata/` → 埋め込み）。
+  - ホットセットに定義がある場合はそちらを優先し、無い場合にメイン表で補完します。
+
+注意:
+- 既存の `Kanji.ReplaceOldToNew` は逆方向（異体/旧→常用）です。用途に応じて使い分けてください。
+
 ## NuGet からの導入
 
 [![NuGet](https://img.shields.io/nuget/vpre/Kanji.Net.svg)](https://www.nuget.org/packages/Kanji.Net)
@@ -89,14 +110,14 @@ var normalizerMainFirst = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv, 
 ### インストール（.NET CLI）
 
 ```bash
-dotnet add package Kanji.Net --version 1.0.0-preview.3
+dotnet add package Kanji.Net --version 1.0.0-preview.4
 ```
 
 ### インストール（PackageReference）
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Kanji.Net" Version="1.0.0-preview.3" />
+  <PackageReference Include="Kanji.Net" Version="1.0.0-preview.4" />
   <!-- 例: Release 版に移行する際は 1.0.0 などに変更してください -->
   
   
