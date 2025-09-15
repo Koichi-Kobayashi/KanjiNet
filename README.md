@@ -23,9 +23,6 @@ This package is a library for the Japanese kanji, including the regular-use kanj
 旧字体を新字体に変換するための `strings.Replacer` を用意しています。
 
 ---
-MIT
-
----
 
 
 ## ShiftJISNormalizer（異体/旧字の常用正規化）
@@ -192,3 +189,6 @@ string key = normalizer.Normalize("高橋");
 ポイント:
 - `Normalize` は文字列を常用に寄せ、`Equivalent(a,b)` は「正規化後に等しいか」を判定します。
 - CSVを用意できない場合の簡易用途は `ShiftJISNormalizer.CreateBuiltinHotsetMinimal()` でも検証可能です。
+
+---
+MIT
