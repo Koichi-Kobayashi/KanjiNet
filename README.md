@@ -87,15 +87,18 @@ var normalizerMainFirst = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv, 
 ### インストール（.NET CLI）
 
 ```bash
-dotnet add package Kanji.Net --version 1.0.0-preview.1
+dotnet add package Kanji.Net --version 1.0.0-preview.2
 ```
 
 ### インストール（PackageReference）
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Kanji.Net" Version="1.0.0-preview.1" />
+  <PackageReference Include="Kanji.Net" Version="1.0.0-preview.2" />
   <!-- 例: Release 版に移行する際は 1.0.0 などに変更してください -->
+  
+  
+  
   
 </ItemGroup>
 ```

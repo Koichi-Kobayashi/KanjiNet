@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<!-- NuGet 基本情報 -->
 		<PackageId>Kanji.Net</PackageId>
-		<Version>1.0.0-preview.1</Version>
+		<Version>1.0.0-preview.2</Version>
 		<Authors>Koichi Kobayashi</Authors>
 		<Company></Company>
 		<Description>This is a package related to Japanese kanji.</Description>
