@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<!-- NuGet 基本情報 -->
 		<PackageId>Kanji.Net</PackageId>
-		<Version>1.0.0-preview.2</Version>
+		<Version>1.0.0-preview.3</Version>
 		<Authors>Koichi Kobayashi</Authors>
 		<Company></Company>
 		<Description>This is a package related to Japanese kanji.</Description>
@@ -47,21 +47,41 @@
 
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="/" Link="README.md" />
-		<None Include="kanjidata\golden_jinmei.txt">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Include="kanjidata\golden_jyouyou_H22-11-30.csv">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Include="kanjidata\golden_old-new.txt">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Include="kanjidata\normalization_map_hotset_names.csv">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Include="kanjidata\normalization_map_namefirst_491.csv">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
+		<Content Include="kanjidata\golden_jinmei.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>contentFiles\any\any\kanjidata\</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<PackageFlatten>false</PackageFlatten>
+		</Content>
+		<Content Include="kanjidata\golden_jyouyou_H22-11-30.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>contentFiles\any\any\kanjidata\</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<PackageFlatten>false</PackageFlatten>
+		</Content>
+		<Content Include="kanjidata\golden_old-new.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>contentFiles\any\any\kanjidata\</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<PackageFlatten>false</PackageFlatten>
+		</Content>
+		<Content Include="kanjidata\normalization_map_hotset_names.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>contentFiles\any\any\kanjidata\</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<PackageFlatten>false</PackageFlatten>
+		</Content>
+		<Content Include="kanjidata\normalization_map_namefirst_491.csv">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>contentFiles\any\any\kanjidata\</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<PackageFlatten>false</PackageFlatten>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>

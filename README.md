@@ -79,6 +79,8 @@ var normalizerMainFirst = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv, 
 - 出力ディレクトリ配下 `kanjidata/` のファイル
 - リポジトリの `KanjiNet/kanjidata/` のファイル（開発時）
 
+注: NuGet から導入した場合は、パッケージに含まれる `kanjidata/` がビルド時に出力フォルダ直下へ自動展開されます（contentFiles）。そのため使用例ではファイル名だけで解決できます。
+
 
 ## NuGet からの導入
 
@@ -87,14 +89,14 @@ var normalizerMainFirst = ShiftJISNormalizer.FromCsvWithHotset(mainCsv, hotCsv, 
 ### インストール（.NET CLI）
 
 ```bash
-dotnet add package Kanji.Net --version 1.0.0-preview.2
+dotnet add package Kanji.Net --version 1.0.0-preview.3
 ```
 
 ### インストール（PackageReference）
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Kanji.Net" Version="1.0.0-preview.2" />
+  <PackageReference Include="Kanji.Net" Version="1.0.0-preview.3" />
   <!-- 例: Release 版に移行する際は 1.0.0 などに変更してください -->
   
   
@@ -105,12 +107,16 @@ dotnet add package Kanji.Net --version 1.0.0-preview.2
 
 インストール後は README の使用例に従って `ShiftJISNormalizer` や `Kanji` API をご利用ください。
 
+### kanjidata の自動展開（NuGet）
+
+NuGet パッケージには `kanjidata/` 配下のデータが含まれており、ビルド時に出力フォルダ直下の `kanjidata/` に自動コピーされます。したがって、使用例のとおりファイル名（例: `normalization_map_namefirst_491.csv`）だけを渡せば `DataPathResolver` が見つけます。
+
 ## ファイルとSQL Server上の異体字を照合する実装例
 
 ### 前提
 - `ShiftJISNormalizer` を使い、異体/旧字/互換漢字を常用に正規化します。
   - ホットセット（人名頻出）+ メインCSVを指定すると網羅性が上がります。
-  - ファイル解決は「指定パス → 出力直下 → 出力/kanjidata → 埋め込みリソース」の順で自動解決されます。
+  - ファイル解決は「指定パス → 出力直下 → 出力/kanjidata → リポジトリの `KanjiNet/kanjidata/`（開発時）」の順で自動解決されます。NuGet 導入時はビルドで `kanjidata/` が自動配置されます。
 
 ```csharp
 var mainCsv = "normalization_map_namefirst_491.csv";
